@@ -229,10 +229,15 @@ def main():
     parser.add_argument("--config", type=Path, default=ROOT / "config.json")
     parser.add_argument("--session", type=Path)
     parser.add_argument("--probe", action="store_true")
+    parser.add_argument("--probe-timeout", type=float, default=180,
+                        help="Readiness timeout including cold model loading; match timeout is unchanged")
     parser.add_argument("--mock", action="store_true")
     args = parser.parse_args()
     config = json.loads(args.config.read_text(encoding="utf-8-sig"))
     if args.probe:
+        if not 0 < args.probe_timeout <= 3600:
+            parser.error("--probe-timeout must be between 0 and 3600 seconds")
+        config = dict(config, request_timeout_seconds=args.probe_timeout)
         state = {"team": 0, "metal": 1500, "energy": 10000, "combat_units": 6,
                  "enemy_base": {"x": 0.8, "z": 0.8}, "enemies": []}
         failed = False

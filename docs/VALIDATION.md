@@ -20,3 +20,17 @@ Tests cover authentication, call limits, concurrency, HTTP failures, command leg
 Launch behavior is now Python. PowerShell only forwards legacy arguments. Recoil binaries/data remain external. Native macOS/Linux engine execution is unverified until tested on a separate host. Current revision test results are appended after execution.
 
 Historical development commits remain in the personal game fork and its archive branch. The lab starts from a clean source snapshot. The personal game fork is restored separately without force-pushing. No personal feature is added to the team game.
+
+
+## Windows migration checks: 2026-10-21
+
+- All 37 Python/Lua 5.1 tests passed, including preparation with spaces in paths, conflicting-link protection, owned-process cleanup, configuration injection rejection, and isolation of model warm-up timeouts from match timeouts.
+- Recursive submodule initialization passed; the pinned team checkout remains clean.
+- Mock engine run `20261021-113418-78c9c1` exited with code zero after 30 game seconds. Five snapshots and two applied commands per team passed the log auditor. This was a launch/command-path smoke test, not a completed-match result.
+- Initial cold content run `20261021-113022-bc9882` exceeded the former loading deadline and was stopped. The new configurable loading allowance defaults to 300 seconds; the successful mock run took about 212 wall-clock seconds.
+- First real-model attempt `20261021-113845-633d01` correctly refused to start a game because local model cold loading exceeded the old 60-second readiness limit. Cloud readiness succeeded. Readiness now has its own 180-second allowance, while in-match request limits are unchanged.
+- Desktop shortcut target and the legacy BAR install's content junction were checked after the submodule move.
+- Native macOS/Linux game runs are still unverified. The POSIX link branch has a mocked contract test only.
+
+- Final actual-model graphical run `20261021-114103-6bf131`: draw at frame 900 (30 game seconds), five snapshots, two valid decisions and two applied commands per team, zero model errors, engine exit zero. The result-required auditor passed. The local model produced units; the cloud model attacked. Local measured latency was 1.078 seconds; cloud 0.640-1.000 seconds. These are short smoke-test observations, not a benchmark.
+- The bridge port 18765 had no listener after the match. Both CMD and legacy PowerShell preparation entry points exited successfully.

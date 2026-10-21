@@ -15,6 +15,20 @@ spec.loader.exec_module(launcher)
 
 
 class LauncherTests(unittest.TestCase):
+    def test_probe_timeout_does_not_change_match_config(self):
+        bridge_spec = importlib.util.spec_from_file_location('probe_bridge', ROOT / 'agent/bridge.py')
+        bridge = importlib.util.module_from_spec(bridge_spec)
+        bridge_spec.loader.exec_module(bridge)
+        before = (ROOT / 'agent/config.json').read_bytes()
+        with patch.object(sys, 'argv', ['bridge.py', '--probe']), patch.object(bridge, 'chat', return_value=({}, {})) as chat:
+            with self.assertRaises(SystemExit) as result:
+                bridge.main()
+        self.assertEqual(result.exception.code, 0)
+        self.assertEqual(chat.call_count, 2)
+        for call in chat.call_args_list:
+            self.assertEqual(call.args[0]['request_timeout_seconds'], 180)
+        self.assertEqual((ROOT / 'agent/config.json').read_bytes(), before)
+
     def test_rejects_model_startscript_injection(self):
         config = json.loads((ROOT / 'agent/config.json').read_text())
         for value in ('model;deathmode=none;', 'model\nother=1', ''):

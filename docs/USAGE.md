@@ -23,7 +23,7 @@ Command-line paths override this file. Runtime files must be outside the source 
 
 ## Models and rules
 
-`agent/config.json` selects local `qwen3.5:4b` and cloud `gpt-oss:120b-cloud`, local context 4096, a minimum decision interval of 20 seconds, 40 calls per team, and a 15-minute match. Each model gets one additional pre-match readiness probe. Cloud access uses the local Ollama service's existing authentication. No cloud keys are stored in Lua or Git.
+`agent/config.json` selects local `qwen3.5:4b` and cloud `gpt-oss:120b-cloud`, local context 4096, a minimum decision interval of 20 seconds, 40 calls per team, and a 15-minute match. Each model gets one additional pre-match readiness probe. The probe allows up to 180 seconds for cold loading (`agent/bridge.py --probe-timeout`); in-match requests retain the configured 60-second default timeout. Cloud access uses the local Ollama service's existing authentication. No cloud keys are stored in Lua or Git.
 
 The original host has a Ryzen 5 7500F, 31.6 GiB RAM, and RTX 4070 SUPER 12 GB. The local model used about 3.13 GB GPU memory in the October 11 measurement. Availability, quotas, and latency can vary. Model errors are recorded without silently substituting another model.
 
